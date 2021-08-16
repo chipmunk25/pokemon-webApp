@@ -38,100 +38,103 @@ const Homepage = () => {
         axios.get(`${baseURL}/${query?.toLowerCase()}`).then(res => {
             setLoading(false)
             setPokemon(res.data)
-        }).catch(err => toast({
-            title: `Pokemon not Found`,
+        }).catch(err => {
+            setLoading(false)
+            toast({
+                title: `Pokemon not Found`,
+                status: 'error',
+                isClosable: true,
+            })
+        )
+    }
+}
+
+const AddToTeamHandler = () => {
+    if (!pokemon) {
+        toast({
+            title: `No Pokemon Selected`,
             status: 'error',
             isClosable: true,
         })
-        )
+        return
     }
-
-    const AddToTeamHandler = () => {
-        if (!pokemon) {
-            toast({
-                title: `No Pokemon Selected`,
-                status: 'error',
-                isClosable: true,
-            })
-            return
-        }
-        if (myPokemonLists?.length >= 6) {
-            toast({
-                title: `You have reached the number of Pokemon you can have`,
-                status: 'error',
-                isClosable: true,
-            })
-            return
-        }
-        if (FindPokemonAlreadyExist(myPokemonLists, pokemon.id)) {
-            toast({
-                title: `Pokemon Already in Your Team`,
-                status: 'error',
-                isClosable: true,
-            })
-            return
-        }
-        dispatch(AddToTeam(pokemon))
+    if (myPokemonLists?.length >= 6) {
         toast({
-            title: `pokemon added`,
-            status: 'success',
+            title: `You have reached the number of Pokemon you can have`,
+            status: 'error',
             isClosable: true,
-            position: 'top-right'
         })
-
+        return
     }
-    const RemoveFromTeamHandler = () => {
-        if (!pokemon) {
-            toast({
-                title: `No Pokemon Selected`,
-                status: 'error',
-                isClosable: true,
-            })
-            return
-        }
-        dispatch(RemoveFromTeam(pokemon))
+    if (FindPokemonAlreadyExist(myPokemonLists, pokemon.id)) {
         toast({
-            title: `Pokemon Removed`,
-            status: 'success',
+            title: `Pokemon Already in Your Team`,
+            status: 'error',
             isClosable: true,
-            position: 'top-right'
         })
-        setPokemon(undefined)
+        return
     }
-    const ViewYourPokemon = () => {
-        history.push('/yourpokemon')
+    dispatch(AddToTeam(pokemon))
+    toast({
+        title: `pokemon added`,
+        status: 'success',
+        isClosable: true,
+        position: 'top-right'
+    })
+
+}
+const RemoveFromTeamHandler = () => {
+    if (!pokemon) {
+        toast({
+            title: `No Pokemon Selected`,
+            status: 'error',
+            isClosable: true,
+        })
+        return
     }
-    return (
-        <Container>
-            <Center>
-                <Heading>Pokemon Home</Heading>
-            </Center>
-            <Stack direction="column">
-                <HomeTop
-                    handleGenerateRandom={handleGenerateRandom}
-                    myPokemonLists={myPokemonLists}
-                    ViewYourPokemon={ViewYourPokemon}
-                />
+    dispatch(RemoveFromTeam(pokemon))
+    toast({
+        title: `Pokemon Removed`,
+        status: 'success',
+        isClosable: true,
+        position: 'top-right'
+    })
+    setPokemon(undefined)
+}
+const ViewYourPokemon = () => {
+    history.push('/yourpokemon')
+}
+return (
+    <Container>
+        <Center>
+            <Heading>Pokemon Home</Heading>
+        </Center>
+        <Stack direction="column">
+            <HomeTop
+                handleGenerateRandom={handleGenerateRandom}
+                myPokemonLists={myPokemonLists}
+                ViewYourPokemon={ViewYourPokemon}
+            />
 
-                <SearchBox
-                    setQuery={setQuery}
-                    handleSearch={handleSearch}
-                />
+            <SearchBox
+                setQuery={setQuery}
+                handleSearch={handleSearch}
+            />
 
-                {
-                    loading ? <Center> <CircularProgress isIndeterminate color="green.300" />  </Center> :
-                        <>
-                            <PokemonDetail
-                                actionText={FindPokemonAlreadyExist(myPokemonLists, pokemon?.id) ? "Remove from Team" : "Add to Team"}
-                                pokemon={pokemon}
-                                AddRemoveTeamHandler={FindPokemonAlreadyExist(myPokemonLists, pokemon?.id) ? RemoveFromTeamHandler : AddToTeamHandler}
-                            />
-                        </>
-                }
-            </Stack>
+            {
+                loading ? <Center> <CircularProgress isIndeterminate color="green.300" />  </Center> :
+                    <>
+                        <PokemonDetail
+                            actionText={FindPokemonAlreadyExist(myPokemonLists, pokemon?.id) ? "Remove from Team" : "Add to Team"}
+                            pokemon={pokemon}
+                            AddRemoveTeamHandler={FindPokemonAlreadyExist(myPokemonLists, pokemon?.id) ? RemoveFromTeamHandler : AddToTeamHandler}
+                        />
+                    </>
+            }
+        </Stack>
 
-        </Container>
-    )
+    </Container>
+)
 }
 
 export default Homepage
