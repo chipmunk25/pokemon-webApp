@@ -38,7 +38,12 @@ const Homepage = () => {
         axios.get(`${baseURL}/${query?.toLowerCase()}`).then(res => {
             setLoading(false)
             setPokemon(res.data)
-        }).catch(err => console.log(err.message))
+        }).catch(err => toast({
+            title: `Pokemon not Found`,
+            status: 'error',
+            isClosable: true,
+        })
+        )
     }
 
     const AddToTeamHandler = () => {
